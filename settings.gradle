@@ -1,0 +1,4 @@
+rootProject.name = 'zaprnt'
+include 'beans'
+include 'metadata'
+
