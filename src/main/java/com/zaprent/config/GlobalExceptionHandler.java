@@ -1,4 +1,4 @@
-package com.zaprent;
+package com.zaprent.config;
 
 import com.zaprnt.beans.error.ErrorDetails;
 import com.zaprnt.beans.error.ZException;

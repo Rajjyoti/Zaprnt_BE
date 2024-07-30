@@ -1,4 +1,4 @@
-package com.zaprent;
+package com.zaprent.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaprent.service.jwt.IJwtBlackListService;

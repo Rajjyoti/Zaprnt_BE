@@ -1,4 +1,4 @@
-package com.zaprent;
+package com.zaprent.config;
 
 import com.zaprent.service.jwt.IJwtBlackListService;
 import jakarta.servlet.http.HttpServletRequest;

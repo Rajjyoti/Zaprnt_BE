@@ -1,4 +1,4 @@
-package com.zaprent;
+package com.zaprent.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

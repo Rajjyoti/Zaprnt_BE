@@ -1,4 +1,4 @@
-package com.zaprent;
+package com.zaprent.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
