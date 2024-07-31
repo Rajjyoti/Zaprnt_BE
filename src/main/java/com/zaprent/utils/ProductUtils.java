@@ -48,6 +48,7 @@ public class ProductUtils {
                 .setOwnerId(product.getOwnerId())
                 .setOwnerName(product.getOwnerName())
                 .setPrice(product.getPrice())
+                .setQuantity(product.getQuantity())
                 .setStatus(product.getStatus())
                 .setDescription(product.getDescription());
     }
@@ -67,6 +68,7 @@ public class ProductUtils {
                 .setOwnerId(request.getOwnerId())
                 .setOwnerName(request.getOwnerName())
                 .setPrice(request.getPrice())
+                .setQuantity(request.getQuantity())
                 .setStatus(ProductStatus.AVAILABLE)
                 .setDescription(request.getDescription());
     }
@@ -95,6 +97,12 @@ public class ProductUtils {
         }
         if (isNotBlank(request.getCondition())) {
             product.setCondition(request.getCondition());
+        }
+        if (nonNull(request.getQuantity())) {
+            product.setQuantity(request.getQuantity());
+            if (request.getQuantity() == 0) {
+                product.setStatus(ProductStatus.OUT_OF_STOCK);
+            }
         }
         product.setImages(request.getImages());
         return product;

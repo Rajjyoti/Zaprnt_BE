@@ -24,5 +24,6 @@ public class ProductResponse {
     private String location;
     private ProductStatus status;
     private BigDecimal price;
+    private int quantity;
     private String condition;
 }

@@ -7,6 +7,7 @@ import com.zaprnt.beans.dtos.response.cart.CartItemResponse;
 import com.zaprnt.beans.dtos.response.product.ProductResponse;
 import com.zaprnt.beans.models.CartItem;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,18 +54,18 @@ public class CartItemUtils {
                 .setProductId(request.getProductId())
                 .setUserId(request.getUserId())
                 .setQuantity(request.getQuantity())
-                .setPrice(request.getPrice());
+                .setPrice(request.getPrice().multiply(BigDecimal.valueOf(request.getQuantity())));
     }
 
     public static void updateCartItemFields(CartItem cartItem, CartItemUpdateRequest request) {
         if (isNull(request)) {
             return;
         }
-        if (nonNull(request.getPrice())) {
-            cartItem.setPrice(request.getPrice());
-        }
         if (request.getQuantity() != 0) {
             cartItem.setQuantity(request.getQuantity());
+        }
+        if (nonNull(request.getPrice())) {
+            cartItem.setPrice(request.getPrice().multiply(BigDecimal.valueOf(request.getQuantity())));
         }
     }
 

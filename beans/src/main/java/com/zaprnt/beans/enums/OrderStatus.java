@@ -1,7 +1,8 @@
 package com.zaprnt.beans.enums;
 
 public enum OrderStatus {
-    PENDING,
+    PENDING_APPROVAL,
+    APPROVED,
     SHIPPED,
     DELIVERED,
     CANCELLED,

@@ -53,7 +53,9 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public OrderResponse createOrder(OrderCreateRequest request) {
         List<OrderItem> orderItems = getOrderItemsFromProducts(request.getItems());
-        Order order = orderRepo.saveOrder(convertToOrder(orderItems, request, OrderStatus.PENDING));
+        Order order = orderRepo.saveOrder(convertToOrder(orderItems, request, OrderStatus.PENDING_APPROVAL));
+        //TODO: Notification to renters for approval of each order item
+        //TODO: send kafka event to products to update the quantity and availability status
         return convertToOrderResponse(order);
     }
 

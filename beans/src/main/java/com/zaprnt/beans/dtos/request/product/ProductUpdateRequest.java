@@ -20,5 +20,6 @@ public class ProductUpdateRequest {
     private String location;
     private ProductStatus status;
     private BigDecimal price;
+    private Integer quantity;
     private String condition;
 }

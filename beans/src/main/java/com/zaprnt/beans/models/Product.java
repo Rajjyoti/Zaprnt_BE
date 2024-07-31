@@ -30,6 +30,7 @@ public class Product extends BaseMongoBean {
     private List<String> images;
     private String location;
     private ProductStatus status;
+    private int quantity;
     private BigDecimal price;
     private String condition;
 }
