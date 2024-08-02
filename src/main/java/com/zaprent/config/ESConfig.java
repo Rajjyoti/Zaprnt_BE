@@ -21,15 +21,11 @@ public class ESConfig {
 
     @Bean
     public ElasticsearchClient elasticsearchClient() {
-        // Create the low-level RestClient
         RestClient lowLevelClient = RestClient.builder(
                 new HttpHost(elasticsearchHost, elasticsearchPort, "http")
         ).build();
 
-        // Create the transport with the low-level client
         ElasticsearchTransport transport = new RestClientTransport(lowLevelClient, new JacksonJsonpMapper());
-
-        // Create the high-level Elasticsearch client
         return new ElasticsearchClient(transport);
     }
 }

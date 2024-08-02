@@ -70,7 +70,8 @@ public class ProductUtils {
                 .setPrice(request.getPrice())
                 .setQuantity(request.getQuantity())
                 .setStatus(ProductStatus.AVAILABLE)
-                .setDescription(request.getDescription());
+                .setDescription(request.getDescription())
+                .setSearchText(getSearchText(request.getTitle(), request.getDescription()));
     }
 
     public static Product getUpdatedProduct(Product product, ProductUpdateRequest request) {
@@ -105,6 +106,11 @@ public class ProductUtils {
             }
         }
         product.setImages(request.getImages());
+        product.setSearchText(getSearchText(product.getTitle(), product.getDescription()));
         return product;
+    }
+
+    private static String getSearchText(String title, String description) {
+        return String.format("%s %s", title, description);
     }
 }

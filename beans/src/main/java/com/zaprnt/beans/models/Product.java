@@ -34,4 +34,5 @@ public class Product extends BaseMongoBean {
     private int quantity;
     private BigDecimal price;
     private String condition;
+    private String searchText;
 }

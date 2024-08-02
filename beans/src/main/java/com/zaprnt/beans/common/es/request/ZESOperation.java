@@ -8,7 +8,9 @@ public enum ZESOperation {
     LESS_THAN_OR_EQUAL("lte"),
     RANGE("range"),
     EXISTS("exists"),
-    NOT_EXISTS("not_exists");
+    NOT_EXISTS("not_exists"),
+    MATCH("match"),
+    IN("in");
 
     private final String value;
 

@@ -10,6 +10,7 @@ import java.util.List;
 public class ZESRequest {
     private ZESFilter filter;
     private List<ZESSortOption> sortOptions;
+    private String searchText;
     private int page;
     private int size;
 }
