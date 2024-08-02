@@ -1,4 +1,4 @@
-package com.zaprnt.beans.common;
+package com.zaprnt.beans.common.mongo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,10 +1,10 @@
 package com.zaprnt.beans.models;
 
 import com.zaprnt.beans.common.mongo.BaseMongoBean;
+import com.zaprnt.beans.enums.OrderStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,11 +14,13 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @Document
 @EqualsAndHashCode(callSuper = true)
-@CompoundIndex(name = "productId_userId_cart", def = "{'productId': 1, 'userId': 1}", unique = true)
-public class CartItem extends BaseMongoBean {
-    private String productId;
+public class OrderItem extends BaseMongoBean {
     @Indexed
-    private String userId;
+    private String orderId;
+    private String productId;
+    private String productName;
+    private String productImageUrl;
     private int quantity;
     private BigDecimal price;
+    private OrderStatus status;
 }

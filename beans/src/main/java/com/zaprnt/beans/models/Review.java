@@ -1,6 +1,6 @@
 package com.zaprnt.beans.models;
 
-import com.zaprnt.beans.common.BaseMongoBean;
+import com.zaprnt.beans.common.mongo.BaseMongoBean;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;

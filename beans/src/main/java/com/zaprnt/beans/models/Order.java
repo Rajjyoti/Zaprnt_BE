@@ -1,7 +1,6 @@
 package com.zaprnt.beans.models;
 
-import com.zaprnt.beans.common.BaseMongoBean;
-import com.zaprnt.beans.dtos.OrderItem;
+import com.zaprnt.beans.common.mongo.BaseMongoBean;
 import com.zaprnt.beans.enums.OrderStatus;
 import com.zaprnt.beans.enums.RentType;
 import lombok.Data;
@@ -10,7 +9,6 @@ import lombok.experimental.Accessors;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -18,10 +16,10 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class Order extends BaseMongoBean {
     private String userId;
-    private List<OrderItem> items;
     private BigDecimal totalPrice;
     private RentType rentType;
     private OrderStatus status;
+    private int itemCount;
     private long startTime;
     private long endTime;
 }

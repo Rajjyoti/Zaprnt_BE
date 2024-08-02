@@ -1,6 +1,6 @@
 package com.zaprnt.beans.models;
 
-import com.zaprnt.beans.common.BaseMongoBean;
+import com.zaprnt.beans.common.mongo.BaseMongoBean;
 import com.zaprnt.beans.dtos.ProductAttribute;
 import com.zaprnt.beans.enums.Category;
 import com.zaprnt.beans.enums.ProductStatus;
@@ -16,6 +16,7 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 @Document
+@org.springframework.data.elasticsearch.annotations.Document(indexName = "product")
 @EqualsAndHashCode(callSuper = true)
 public class Product extends BaseMongoBean {
     @Indexed

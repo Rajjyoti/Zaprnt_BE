@@ -2,9 +2,10 @@ package com.zaprent.repo.product.impl;
 
 import com.mongodb.client.result.DeleteResult;
 import com.zaprent.repo.product.CustomProductRepository;
+import com.zaprent.service.product.impl.ProductSearchServiceImpl;
 import com.zaprnt.beans.enums.Category;
 import com.zaprnt.beans.models.Product;
-import com.zaprnt.beans.models.User;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -18,14 +19,20 @@ import static com.zaprnt.beans.constants.Constants.*;
 public class IProductRepoImpl implements CustomProductRepository {
 
     private final MongoTemplate mongoTemplate;
+    private final ProductSearchServiceImpl productSearchService;
+    private final AsyncTaskExecutor asyncTaskExecutor;
 
-    public IProductRepoImpl(MongoTemplate mongoTemplate) {
+    public IProductRepoImpl(MongoTemplate mongoTemplate, ProductSearchServiceImpl productSearchService, AsyncTaskExecutor asyncTaskExecutor) {
         this.mongoTemplate = mongoTemplate;
+        this.productSearchService = productSearchService;
+        this.asyncTaskExecutor = asyncTaskExecutor;
     }
 
     @Override
     public Product saveProduct(Product product) {
-        return mongoTemplate.save(product);
+        Product response = mongoTemplate.save(product);
+        saveInEs(response);
+        return response;
     }
 
     @Override
@@ -51,7 +58,18 @@ public class IProductRepoImpl implements CustomProductRepository {
     @Override
     public boolean deleteProductById(String id) {
         DeleteResult deleteResult = mongoTemplate.remove(new Query(Criteria.where(ID_FIELD).is(id)));
+        if (deleteResult.wasAcknowledged()) {
+            deleteFromEs(id);
+        }
         return deleteResult.wasAcknowledged();
+    }
+
+    private void saveInEs(Product product) {
+        asyncTaskExecutor.submit(() -> productSearchService.saveProductInEs(product));
+    }
+
+    private void deleteFromEs(String id) {
+        asyncTaskExecutor.submit(() -> productSearchService.deleteProductFromEs(id));
     }
 
     private Criteria getDefaultCriteria() {

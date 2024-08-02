@@ -1,9 +1,10 @@
 package com.zaprent.service.order.impl;
 
 import com.zaprent.repo.order.IOrderRepo;
+import com.zaprent.service.order.IOrderItemService;
 import com.zaprent.service.order.IOrderService;
 import com.zaprent.service.product.IProductService;
-import com.zaprnt.beans.dtos.OrderItem;
+import com.zaprnt.beans.models.OrderItem;
 import com.zaprnt.beans.dtos.request.order.OrderCreateRequest;
 import com.zaprnt.beans.dtos.request.order.OrderItemRequest;
 import com.zaprnt.beans.dtos.request.order.OrderUpdateRequest;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.zaprent.utils.OrderUtils.*;
@@ -31,6 +33,7 @@ import static java.util.Objects.nonNull;
 public class OrderServiceImpl implements IOrderService {
     private final IOrderRepo orderRepo;
     private final IProductService productService;
+    private final IOrderItemService orderItemService;
 
     @Override
     public OrderResponse getOrderById(String orderId) {
@@ -38,7 +41,7 @@ public class OrderServiceImpl implements IOrderService {
         if (isNull(order)) {
             throw new ZException(ZError.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND, orderId);
         }
-        return convertToOrderResponse(order);
+        return convertToOrderResponse(order, null);
     }
 
     @Override
@@ -52,11 +55,13 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public OrderResponse createOrder(OrderCreateRequest request) {
-        List<OrderItem> orderItems = getOrderItemsFromProducts(request.getItems());
-        Order order = orderRepo.saveOrder(convertToOrder(orderItems, request, OrderStatus.PENDING_APPROVAL));
+        String orderId = UUID.randomUUID().toString();
+        List<OrderItem> orderItems = getOrderItemsFromProducts(request.getItems(), orderId, OrderStatus.PENDING_APPROVAL);
+        Order order = orderRepo.saveOrder(convertToOrder(request, OrderStatus.PENDING_APPROVAL, calculateTotalOrderPrice(orderItems), request.getItems().size(), orderId));
+        orderItemService.createOrderItems(orderItems);
         //TODO: Notification to renters for approval of each order item
         //TODO: send kafka event to products to update the quantity and availability status
-        return convertToOrderResponse(order);
+        return convertToOrderResponse(order, orderItems);
     }
 
     @Override
@@ -66,10 +71,10 @@ public class OrderServiceImpl implements IOrderService {
             throw new ZException(ZError.ORDER_NOT_FOUND, request.getOrderId());
         }
         order.setStatus(request.getStatus());
-        return convertToOrderResponse(orderRepo.saveOrder(order));
+        return convertToOrderResponse(orderRepo.saveOrder(order), null);
     }
 
-    private List<OrderItem> getOrderItemsFromProducts(List<OrderItemRequest> items) {
+    private List<OrderItem> getOrderItemsFromProducts(List<OrderItemRequest> items, String orderId, OrderStatus status) {
         List<String> productIds = items.stream().map(OrderItemRequest::getProductId).toList();
         Map<String, OrderItemRequest> orderItemByProductId = items.stream().collect(Collectors.toMap(OrderItemRequest::getProductId, orderItem -> orderItem));
         List<ProductResponse> products = productService.getProductsByIds(productIds);
@@ -78,7 +83,7 @@ public class OrderServiceImpl implements IOrderService {
             if (isNull(product) || isNull(orderItemByProductId.get(product.getId()))) {
                 continue;
             }
-            OrderItem item = convertToOrderItemFromProduct(product, orderItemByProductId.get(product.getId()));
+            OrderItem item = convertToOrderItemFromProduct(product, orderItemByProductId.get(product.getId()), orderId, status);
             if (nonNull(item)) {
                 orderItems.add(item);
             }

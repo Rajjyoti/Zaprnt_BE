@@ -1,6 +1,8 @@
 package com.zaprent.controller.product;
 
+import com.zaprent.service.product.IProductSearchService;
 import com.zaprent.service.product.IProductService;
+import com.zaprnt.beans.common.es.request.ZESRequest;
 import com.zaprnt.beans.dtos.request.product.ProductCreateRequest;
 import com.zaprnt.beans.dtos.request.product.ProductUpdateRequest;
 import com.zaprnt.beans.enums.Category;
@@ -19,6 +21,7 @@ import static com.zaprnt.beans.error.ZResponseEntityBuilder.okResponseEntity;
 @RequestMapping("/products")
 public class ProductController {
     private final IProductService productService;
+    private final IProductSearchService productSearchService;
 
     @GetMapping("/ids/{id}")
     public ResponseEntity<Map<String, Object>> getProductById(@PathVariable String id) {
@@ -33,6 +36,11 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<Map<String, Object>> createProduct(@Valid @RequestBody ProductCreateRequest request) {
         return okCreatedResponseEntity(productService.createProduct(request));
+    }
+
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> searchProducts(@Valid @RequestBody ZESRequest request) {
+        return okCreatedResponseEntity(productSearchService.searchProducts(request));
     }
 
     @PutMapping

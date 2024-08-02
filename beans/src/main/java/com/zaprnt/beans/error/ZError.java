@@ -9,7 +9,8 @@ public enum ZError {
     INCORRECT_PASSWORD("106", "incorrect.password"),
     NO_PRODUCTS_FOUND("107", "no.products.found"),
     CART_ITEMS_NOT_FOUND("108", "cart.items.not.found"),
-    USER_ALREADY_EXISTS("109", "user.already.exists");
+    USER_ALREADY_EXISTS("109", "user.already.exists"),
+    ORDER_ITEM_NOT_FOUND("110", "order.item.not.found");
 
     private final String code;
     private final String key;

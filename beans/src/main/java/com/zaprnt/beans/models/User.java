@@ -1,6 +1,6 @@
 package com.zaprnt.beans.models;
 
-import com.zaprnt.beans.common.BaseMongoBean;
+import com.zaprnt.beans.common.mongo.BaseMongoBean;
 import com.zaprnt.beans.enums.AccountStatus;
 import com.zaprnt.beans.enums.ContactType;
 import com.zaprnt.beans.enums.UserType;

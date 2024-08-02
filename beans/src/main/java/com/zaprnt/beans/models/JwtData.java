@@ -1,11 +1,9 @@
 package com.zaprnt.beans.models;
 
-import com.zaprnt.beans.common.BaseMongoBean;
+import com.zaprnt.beans.common.mongo.BaseMongoBean;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
