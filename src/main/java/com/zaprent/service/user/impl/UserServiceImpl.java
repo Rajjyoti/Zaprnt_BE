@@ -10,6 +10,7 @@ import com.zaprnt.beans.error.ZError;
 import com.zaprnt.beans.error.ZException;
 import com.zaprnt.beans.models.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import static io.micrometer.common.util.StringUtils.isNotBlank;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserService {
@@ -30,7 +32,12 @@ public class UserServiceImpl implements IUserService {
         if (isNull(request)) {
             return null;
         }
-        User existingUser = findUser(new UserRequest().setUserName(request.getUserName()).setEmail(request.getEmail()));
+        User existingUser = null;
+        try {
+            existingUser = findUser(new UserRequest().setUserName(request.getUserName()).setEmail(request.getEmail()));
+        } catch (Exception e) {
+            log.error("User already exists");
+        }
         if (nonNull(existingUser)) {
             throw new ZException(ZError.USER_ALREADY_EXISTS, request.getUserName(), request.getEmail());
         }

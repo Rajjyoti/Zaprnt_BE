@@ -38,7 +38,7 @@ public class ProductController {
         return okCreatedResponseEntity(productService.createProduct(request));
     }
 
-    @PostMapping
+    @PostMapping("/search")
     public ResponseEntity<Map<String, Object>> searchProducts(@Valid @RequestBody ZESRequest request) {
         return okCreatedResponseEntity(productSearchService.searchProducts(request));
     }

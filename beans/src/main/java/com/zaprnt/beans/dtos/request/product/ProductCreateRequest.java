@@ -5,6 +5,7 @@ import com.zaprnt.beans.enums.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -22,18 +23,18 @@ public class ProductCreateRequest {
     private String title;
     @NotBlank
     private String description;
-    @NotBlank
+    @NotNull
     private Category category;
-    @NotBlank
+    @NotNull
     private Category subCategory;
     @NotEmpty
     @Valid
     private List<ProductAttribute> attributes;
-    @NotBlank
+    @NotEmpty
     private List<String> images;
     @NotBlank
     private String location;
-    @NotBlank
+    @NotNull
     private BigDecimal price;
     private int quantity;
     private String condition;

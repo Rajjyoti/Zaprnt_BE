@@ -1,8 +1,8 @@
 package com.zaprnt.beans.common.es.request;
 
 public enum ZESSortOrder {
-    ASC("asc"),
-    DESC("desc");
+    ASC("Asc"),
+    DESC("Desc");
 
     private final String value;
 
