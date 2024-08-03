@@ -31,7 +31,8 @@ public class AuthFilter extends OncePerRequestFilter {
     private static final String GET_PRODUCT_BY_ID_ENDPOINT = "/api/products/id/";
     private static final String GET_PRODUCTS_BY_CATEGORY_ENDPOINT = "/api/products/categories";
     private static final String GET_REVIEWS_BY_PRODUCT_ID = "/api/reviews/product-ids";
-    private final List<String> EXCLUDED_PATHS = Arrays.asList(SIGNUP_ENDPOINT, SIGNIN_ENDPOINT, GET_PRODUCT_BY_ID_ENDPOINT, GET_PRODUCTS_BY_CATEGORY_ENDPOINT, GET_REVIEWS_BY_PRODUCT_ID);
+    private static final String SEARCH_TERM_ENDPOINT = "/api/search_terms";
+    private final List<String> EXCLUDED_PATHS = Arrays.asList(SIGNUP_ENDPOINT, SIGNIN_ENDPOINT, GET_PRODUCT_BY_ID_ENDPOINT, GET_PRODUCTS_BY_CATEGORY_ENDPOINT, GET_REVIEWS_BY_PRODUCT_ID, SEARCH_TERM_ENDPOINT);
 
     @Autowired
     private IJwtBlackListService jwtBlacklistService;
@@ -57,7 +58,7 @@ public class AuthFilter extends OncePerRequestFilter {
             Claims claims = JWTUtils.parseClaims(refreshToken);
             String username = claims.get("userName", String.class);
             String email = claims.get("email", String.class);
-            Set<UserType> roles = claims.get("roles", Set.class);
+            List<UserType> roles = claims.get("roles", ArrayList.class);
             accessToken = JWTUtils.generateAccessToken(username, email, roles);
 
             // Set the new access token as a cookie in the response header

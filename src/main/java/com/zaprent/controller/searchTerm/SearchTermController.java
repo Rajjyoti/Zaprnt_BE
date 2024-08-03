@@ -12,12 +12,12 @@ import static com.zaprnt.beans.error.ZResponseEntityBuilder.okResponseEntity;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/search-term")
+@RequestMapping("/search-terms")
 public class SearchTermController {
     private final SearchTermService searchTermService;
 
-    @GetMapping("/recommendations/{id}")
-    public ResponseEntity<Map<String, Object>> getRecommendedSearchTerms(@PathVariable String id) {
+    @GetMapping("/recommendations")
+    public ResponseEntity<Map<String, Object>> getRecommendedSearchTerms(@RequestParam(name = "query", required = false) String id) {
         return okResponseEntity(searchTermService.getRecommendedSearchTerms(id));
     }
 

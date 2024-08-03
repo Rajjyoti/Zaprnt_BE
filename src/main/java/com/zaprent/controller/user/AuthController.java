@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import static com.zaprent.utils.JWTUtils.getResponseHeadersForAuth;
@@ -25,7 +26,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> signUp(@RequestBody UserCreateRequest request) {
         UserResponse response = authService.signUp(request);
-        HttpHeaders headers = getResponseHeadersForAuth(response.getUserName(), response.getEmail(), response.getRoles());
+        HttpHeaders headers = getResponseHeadersForAuth(response.getUserName(), response.getEmail(), new ArrayList<>(response.getRoles()));
         return okCreatedResponseEntity(response, headers);
     }
 
@@ -33,7 +34,7 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<Map<String, Object>> signIn(@Valid @RequestBody AuthRequest request) {
         UserResponse response = authService.signIn(request);
-        HttpHeaders headers = getResponseHeadersForAuth(response.getUserName(), response.getEmail(), response.getRoles());
+        HttpHeaders headers = getResponseHeadersForAuth(response.getUserName(), response.getEmail(), new ArrayList<>(response.getRoles()));
         return okResponseEntity(response, headers);
     }
 

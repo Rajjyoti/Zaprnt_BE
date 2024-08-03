@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import static com.zaprent.utils.SearchTermUtils.createESRequestForRecommendedSearchStrings;
 import static com.zaprnt.beans.common.util.CommonUtils.nullSafeCollection;
+import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -52,6 +53,9 @@ public class SearchTermService {
     }
 
     public List<String> getRecommendedSearchTerms(String searchString) {
+        if (isBlank(searchString)) {
+            return null;
+        }
         try {
             ZESRequest esRequest = createESRequestForRecommendedSearchStrings(searchString.toLowerCase());
             ZESResponse<SearchTerm> response = elasticSearchClient.search(esRequest, SEARCH_TERM_INDEX, SearchTerm.class);

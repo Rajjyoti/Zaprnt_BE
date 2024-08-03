@@ -17,15 +17,15 @@ public class JWTUtils {
     public static final long REFRESH_TOKEN_EXPIRY = 14 * 24 * 60 * 60 * 1000;
     public final static  int MAX_COOKIE_AGE_IN_SECONDS = 15 * 24 * 60 * 60;
 
-    public static String generateAccessToken(String userName, String email, Set<UserType> roles) {
+    public static String generateAccessToken(String userName, String email, List<UserType> roles) {
         return generateToken(userName, email, roles, ACCESS_TOKEN_EXPIRY);
     }
 
-    public static String generateRefreshToken(String userName, String email, Set<UserType> roles) {
+    public static String generateRefreshToken(String userName, String email, List<UserType> roles) {
         return generateToken(userName, email, roles, REFRESH_TOKEN_EXPIRY);
     }
 
-    public static HttpHeaders getResponseHeadersForAuth(String userName, String email, Set<UserType> roles) {
+    public static HttpHeaders getResponseHeadersForAuth(String userName, String email, List<UserType> roles) {
         String accessToken = JWTUtils.generateAccessToken(userName, email, roles);
         String refreshToken = JWTUtils.generateRefreshToken(userName, email, roles);
         HttpHeaders headers = new HttpHeaders();
@@ -34,7 +34,7 @@ public class JWTUtils {
         return headers;
     }
 
-    public static String generateToken(String userName, String email, Set<UserType> roles, long expiryKey) {
+    public static String generateToken(String userName, String email, List<UserType> roles, long expiryKey) {
         Map<String, Object> claims = getJWTClaims(userName, email, roles);
         long now = System.currentTimeMillis();
 
@@ -62,6 +62,7 @@ public class JWTUtils {
 
     public static Claims parseClaims(String token) {
         return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8)))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -78,7 +79,7 @@ public class JWTUtils {
         return null;
     }
 
-    private static Map<String, Object> getJWTClaims(String userName, String email, Set<UserType> roles) {
+    private static Map<String, Object> getJWTClaims(String userName, String email, List<UserType> roles) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userName", userName);
         claims.put("email", email);
