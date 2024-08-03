@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.zaprent.utils.ReviewUtils.convertToReview;
 import static com.zaprent.utils.ReviewUtils.convertToReviewResponse;

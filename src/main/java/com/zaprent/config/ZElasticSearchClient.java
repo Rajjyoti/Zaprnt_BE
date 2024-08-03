@@ -26,6 +26,32 @@ public class ZElasticSearchClient {
     private ElasticsearchClient elasticsearchClient;
 
     /**
+     * Retrieves a document from Elasticsearch by index and ID.
+     *
+     * @param index the index name
+     * @param id the document ID
+     * @return the document as a Map, or null if not found
+     * @throws IOException if an I/O error occurs
+     */
+    public <T> T get(String index, String id, Class<T> clazz) {
+        try {
+            GetRequest getRequest = new GetRequest.Builder()
+                    .index(index)
+                    .id(id)
+                    .build();
+
+            GetResponse<T> getResponse = elasticsearchClient.get(getRequest, clazz);
+            if (getResponse.found()) {
+                return getResponse.source();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * Executes a search query and returns a ZESResponse.
      *
      * @param request the search request
