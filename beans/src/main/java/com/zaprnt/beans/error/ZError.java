@@ -10,7 +10,9 @@ public enum ZError {
     NO_PRODUCTS_FOUND("107", "no.products.found"),
     CART_ITEMS_NOT_FOUND("108", "cart.items.not.found"),
     USER_ALREADY_EXISTS("109", "user.already.exists"),
-    ORDER_ITEM_NOT_FOUND("110", "order.item.not.found");
+    ORDER_ITEM_NOT_FOUND("110", "order.item.not.found"),
+    WISHLIST_ITEM_NOT_FOUND("111", "wishlist.item.not.found"),
+    PRODUCT_QUANTITY_IS_LESS_THAN_REQUIRED_QUANTITY("112", "product.quantity.is.lesser.than.required.quantity");
 
     private final String code;
     private final String key;

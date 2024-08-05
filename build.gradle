@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.eclipse.jetty:jetty-http:11.0.10'
 
     implementation 'co.elastic.clients:elasticsearch-java:8.14.3'
+    implementation 'org.springframework.kafka:spring-kafka'
 
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")

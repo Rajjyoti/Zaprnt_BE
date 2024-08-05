@@ -1,9 +1,12 @@
 package com.zaprent.service.order.impl;
 
+import com.zaprent.kafka.KafkaProducer;
 import com.zaprent.repo.order.IOrderRepo;
 import com.zaprent.service.order.IOrderItemService;
 import com.zaprent.service.order.IOrderService;
 import com.zaprent.service.product.IProductService;
+import com.zaprnt.beans.kafka.BulkProductUpdateEvent;
+import com.zaprnt.beans.kafka.ProductUpdateEvent;
 import com.zaprnt.beans.models.OrderItem;
 import com.zaprnt.beans.dtos.request.order.OrderCreateRequest;
 import com.zaprnt.beans.dtos.request.order.OrderItemRequest;
@@ -15,6 +18,7 @@ import com.zaprnt.beans.error.ZError;
 import com.zaprnt.beans.error.ZException;
 import com.zaprnt.beans.models.Order;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +38,8 @@ public class OrderServiceImpl implements IOrderService {
     private final IOrderRepo orderRepo;
     private final IProductService productService;
     private final IOrderItemService orderItemService;
+    private final KafkaProducer kafkaProducer;
+    private final AsyncTaskExecutor asyncTaskExecutor;
 
     @Override
     public OrderResponse getOrderById(String orderId) {
@@ -56,11 +62,12 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public OrderResponse createOrder(OrderCreateRequest request) {
         String orderId = UUID.randomUUID().toString();
-        List<OrderItem> orderItems = getOrderItemsFromProducts(request.getItems(), orderId, OrderStatus.PENDING_APPROVAL);
+        List<ProductUpdateEvent> updateEvents = new ArrayList<>();
+        List<OrderItem> orderItems = getOrderItemsFromProducts(request.getItems(), orderId, OrderStatus.PENDING_APPROVAL, updateEvents);
         Order order = orderRepo.saveOrder(convertToOrder(request, OrderStatus.PENDING_APPROVAL, calculateTotalOrderPrice(orderItems), request.getItems().size(), orderId));
         orderItemService.createOrderItems(orderItems);
         //TODO: Notification to renters for approval of each order item
-        //TODO: send kafka event to products to update the quantity and availability status
+        asyncTaskExecutor.execute(() -> kafkaProducer.publishEventForProductUpdate(new BulkProductUpdateEvent(updateEvents)));
         return convertToOrderResponse(order, orderItems);
     }
 
@@ -74,18 +81,26 @@ public class OrderServiceImpl implements IOrderService {
         return convertToOrderResponse(orderRepo.saveOrder(order), null);
     }
 
-    private List<OrderItem> getOrderItemsFromProducts(List<OrderItemRequest> items, String orderId, OrderStatus status) {
+    private List<OrderItem> getOrderItemsFromProducts(List<OrderItemRequest> items, String orderId, OrderStatus status, List<ProductUpdateEvent> updateEvents) {
         List<String> productIds = items.stream().map(OrderItemRequest::getProductId).toList();
         Map<String, OrderItemRequest> orderItemByProductId = items.stream().collect(Collectors.toMap(OrderItemRequest::getProductId, orderItem -> orderItem));
         List<ProductResponse> products = productService.getProductsByIds(productIds);
         List<OrderItem> orderItems = new ArrayList<>();
-        for (ProductResponse product: products) {
-            if (isNull(product) || isNull(orderItemByProductId.get(product.getId()))) {
+        for (ProductResponse product : products) {
+            if (isNull(product)) {
                 continue;
             }
-            OrderItem item = convertToOrderItemFromProduct(product, orderItemByProductId.get(product.getId()), orderId, status);
+            OrderItemRequest itemRequest = orderItemByProductId.get(product.getId());
+            if (isNull(itemRequest)) {
+                continue;
+            }
+            if (product.getQuantity() < itemRequest.getQuantity()) {
+                throw new ZException(ZError.PRODUCT_QUANTITY_IS_LESS_THAN_REQUIRED_QUANTITY, String.valueOf(product.getQuantity()), String.valueOf(itemRequest.getQuantity()));
+            }
+            OrderItem item = convertToOrderItemFromProduct(product, itemRequest, orderId, status);
             if (nonNull(item)) {
                 orderItems.add(item);
+                updateEvents.add(new ProductUpdateEvent(product.getId(), product.getQuantity() - item.getQuantity()));
             }
         }
         return orderItems;

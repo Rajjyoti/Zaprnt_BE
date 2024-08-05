@@ -24,10 +24,10 @@ public class CartItemUtils {
                 .setProductId(cartItem.getProductId())
                 .setUserId(cartItem.getUserId())
                 .setQuantity(cartItem.getQuantity())
-                .setPrice(cartItem.getPrice())
                 .setProductDetail(getProductDetail(product))
                 .setCreatedTime(cartItem.getCreatedTime())
-                .setModifiedTime(cartItem.getModifiedTime());
+                .setModifiedTime(cartItem.getModifiedTime())
+                .setPrice(product.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
     }
 
     public static ProductDetail getProductDetail(ProductResponse product) {
@@ -53,8 +53,7 @@ public class CartItemUtils {
         return new CartItem()
                 .setProductId(request.getProductId())
                 .setUserId(request.getUserId())
-                .setQuantity(request.getQuantity())
-                .setPrice(request.getPrice().multiply(BigDecimal.valueOf(request.getQuantity())));
+                .setQuantity(request.getQuantity());
     }
 
     public static void updateCartItemFields(CartItem cartItem, CartItemUpdateRequest request) {
@@ -63,9 +62,6 @@ public class CartItemUtils {
         }
         if (request.getQuantity() != 0) {
             cartItem.setQuantity(request.getQuantity());
-        }
-        if (nonNull(request.getPrice())) {
-            cartItem.setPrice(request.getPrice().multiply(BigDecimal.valueOf(request.getQuantity())));
         }
     }
 
